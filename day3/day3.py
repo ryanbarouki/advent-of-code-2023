@@ -2,7 +2,36 @@ import re
 from functools import reduce
 
 def get_neighbours(i, start, end, lines):
-    pass
+    neighbours = []
+    # prev row
+    if i > 0:
+        # above the number
+        for j in range(start, end):
+            neighbours.append((i-1,j))
+        # corners of previous row
+        if start > 0:
+            neighbours.append((i-1,start-1))
+        if end < len(lines[i]) - 1:
+            neighbours.append((i-1,end))
+    # next row
+    if i < len(lines) - 1:
+        # below the number
+        for j in range(start, end):
+            neighbours.append((i+1,j))
+        # corners of next row
+        if start > 0:
+            neighbours.append((i+1,start-1))
+        if end < len(lines[i]) - 1:
+            neighbours.append((i+1,end))
+    # left and right of number
+    if start > 0:
+        # left
+        neighbours.append((i, start-1))
+    if end < len(lines[i]) - 1:
+        # right
+        neighbours.append((i, end))
+    return neighbours
+
 
 
 def part2(lines):
@@ -12,36 +41,10 @@ def part2(lines):
     total = 0
     for i, row in enumerate(nums_idx):
         for k, (start, end) in enumerate(row):
-            check_positions = []
-            # prev row
-            if i > 0:
-                # above the number
-                for j in range(start, end):
-                    check_positions.append((i-1,j))
-                # corners of previous row
-                if start > 0:
-                    check_positions.append((i-1,start-1))
-                if end < len(lines[i]) - 1:
-                    check_positions.append((i-1,end))
-            # next row
-            if i < len(nums_idx) - 1:
-                # below the number
-                for j in range(start, end):
-                    check_positions.append((i+1,j))
-                # corners of next row
-                if start > 0:
-                    check_positions.append((i+1,start-1))
-                if end < len(lines[i]) - 1:
-                    check_positions.append((i+1,end))
-            # left and right of number
-            if start > 0:
-                # left
-                check_positions.append((i, start-1))
-            if end < len(lines[i]) - 1:
-                # right
-                check_positions.append((i, end))
+            neighbours = get_neighbours(i, start, end, lines)
 
-            for l, col in check_positions:
+            # look for the asterisks
+            for l, col in neighbours:
                 if re.fullmatch(r'\*', lines[l][col]) is not None:
                     # save number and coords of asterisk as a dict (coord): [number list]
                     if (l, col) in asterisk_coords:
@@ -61,36 +64,10 @@ def part1(lines):
     total = 0
     for i, row in enumerate(nums_idx):
         for k, (start, end) in enumerate(row):
-            check_positions = []
-            # prev row
-            if i > 0:
-                # above the number
-                for j in range(start, end):
-                    check_positions.append((i-1,j))
-                # corners of previous row
-                if start > 0:
-                    check_positions.append((i-1,start-1))
-                if end < len(lines[i]) - 1:
-                    check_positions.append((i-1,end))
-            # next row
-            if i < len(nums_idx) - 1:
-                # below the number
-                for j in range(start, end):
-                    check_positions.append((i+1,j))
-                # corners of next row
-                if start > 0:
-                    check_positions.append((i+1,start-1))
-                if end < len(lines[i]) - 1:
-                    check_positions.append((i+1,end))
-            # left and right of number
-            if start > 0:
-                # left
-                check_positions.append((i, start-1))
-            if end < len(lines[i]) - 1:
-                # right
-                check_positions.append((i, end))
+            neighbours = get_neighbours(i, start, end, lines)
 
-            for l, col in check_positions:
+            # look for anything that isn't a number of a dot
+            for l, col in neighbours:
                 if re.fullmatch(r'[^.\d]', lines[l][col]) is not None:
                     total += numbers[i][k]
                     break

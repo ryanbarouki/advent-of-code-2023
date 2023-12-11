@@ -16,7 +16,7 @@ def create_aoc_folder(base_path):
     # Create the Python file with initial code
     python_file_path = os.path.join(next_day_path, f"day_{next_day:02d}.py")
     with open(python_file_path, 'w') as python_file:
-        python_file.write("with open('input.txt') as f:\n\tfor line in f.readlines():\n\t\tprint(line)")
+        python_file.write("with open('input.txt') as f:\n    for line in f.readlines():\n        print(line)")
 
     # Create an empty input.txt file
     input_file_path = os.path.join(next_day_path, 'input.txt')

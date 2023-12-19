@@ -60,68 +60,52 @@ def find_combinations(workflows):
                 queue.append((new, workflows[outcome]))
             continue
 
+        # not last condition
         comparitor, value = condition[0], int(condition[1:])
 
+        # sort the ranges out first
         lower, upper = node[cat]
         if comparitor == '<':
             range1, range2 = (lower, value-1), (value, upper)
         elif comparitor == '>':
             range1, range2 = (lower, value), (value+1, upper)
+
+        new1 = {key:val for key,val in node.items()}
+        new2 = {key:val for key,val in node.items()}
+        new1[cat] = range1
+        new2[cat] = range2
         if outcome == 'A':
             if comparitor == '<':
                 # add product of values lower range
-                new1 = {key:val for key,val in node.items()}
-                new2 = {key:val for key,val in node.items()}
-                new1[cat] = range1
-                new2[cat] = range2
-
                 combinations += get_prod(new1)
                 # add upper range to queue with remaining workflow
                 queue.append((new2, workflow))
-            if comparitor == '>':
+            elif comparitor == '>':
                 # add product of values upper range
-                # add lower range to queue with remaining workflow
-                new1 = {key:val for key,val in node.items()}
-                new2 = {key:val for key,val in node.items()}
-                new1[cat] = range1
-                new2[cat] = range2
                 combinations += get_prod(new2)
                 # add lower range to queue with remaining workflow
                 queue.append((new1, workflow))
         elif outcome == 'R':
             if comparitor == '<':
                 # add upper range to queue with remaining workflow
-                new = {key:val for key,val in node.items()}
-                new[cat] = range2
-                queue.append((new, workflow))
-            if comparitor == '>':
+                new1[cat] = range2
+            elif comparitor == '>':
                 # add lower range to queue with remaining workflow
-                new = {key:val for key,val in node.items()}
-                new[cat] = range1
-                queue.append((new, workflow))
+                new1[cat] = range1
+            queue.append((new1, workflow))
         else:
             # outcome points to new workflow
             if comparitor == '<':
                 # lower range will go to new workflow
-                new1 = {key:val for key,val in node.items()}
-                new2 = {key:val for key,val in node.items()}
-                new1[cat] = range1
-                new2[cat] = range2
                 queue.append((new1, workflows[outcome]))
                 # upper range will stay on this workflow but next one 
                 queue.append((new2, workflow))
             if comparitor == '>':
                 # upper range will go to new workflow
-                new1 = {key:val for key,val in node.items()}
-                new2 = {key:val for key,val in node.items()}
-                new1[cat] = range1
-                new2[cat] = range2
                 queue.append((new2, workflows[outcome]))
                 # lower range will stay on this workflow but next one
                 queue.append((new1, workflow))
     return combinations
-
-            
 
 with open('input.txt') as f:
     parts = []
@@ -153,4 +137,4 @@ with open('input.txt') as f:
                 part_deets[kind] = int(num)
             parts.append(part_deets)
     print(f"Part 1: {sum_parts(process(parts, workflows))}")
-    print(f"Part 2: {find_combinations(workflows2)}")
+    print(f"Part 2: {find_combinations(workflows2)}") #126107942006821

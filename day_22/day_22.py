@@ -73,6 +73,29 @@ def can_disintegrate(i, bricks):
         return True
     return False
 
+def count_fall(i, bricks):
+    bricks_copy = deepcopy(bricks)
+    bricks_copy.pop(i)
+    settled = settle_bricks(bricks_copy)
+    settled_cubes = set(settled)
+    pre_settle_cubes = set(bricks_copy)
+    num_not_moved = len(settled_cubes & pre_settle_cubes)
+    return len(settled_cubes) - num_not_moved
+
+def part1(bricks):
+    settled = settle_bricks(bricks)
+    safe_bricks = 0
+    for i in range(len(settled)):
+        if can_disintegrate(i, settled):
+            safe_bricks += 1
+    return safe_bricks
+
+def part2(bricks):
+    settled = settle_bricks(bricks)
+    total_fall = 0
+    for i in range(len(settled)):
+        total_fall += count_fall(i, settled)
+    return total_fall
 
 
 with open('input.txt') as f:
@@ -85,10 +108,5 @@ with open('input.txt') as f:
         end = (int(x2),int(y2),int(z2))
         bricks.append(create_brick(start, end))
 
-    settled = settle_bricks(bricks)
-    count = 0
-    for i in range(len(settled)):
-        if can_disintegrate(i, settled):
-            print(count)
-            count += 1
-    print(count)
+    print(f"Part 1: {part1(bricks)}") # 454
+    print(f"Part 2: {part2(bricks)}") # 74287
